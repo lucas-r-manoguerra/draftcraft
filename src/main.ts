@@ -34,8 +34,9 @@ async function boot(): Promise<void> {
 
   loop.onFixedUpdate = (dt: number): void => {
     // Aim→ghost→place/rotate/remove must run before stepping so placements
-    // settle in the same fixed step that created them.
-    placement.update(dt, input, engine.camera);
+    // settle in the same fixed step that created them. The aim ray starts at
+    // the player eye (third person), not at the orbiting camera.
+    placement.update(dt, input, engine.camera, player.eyePosition);
     player.update(dt, camera.yawValue, input);
     physics.step();
   };

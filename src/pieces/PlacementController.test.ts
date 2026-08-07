@@ -291,6 +291,53 @@ test("removal with no piece target leaves placed pieces untouched", () => {
   expect(physics.isPieceCollider(placement.placedPieces[0]!.collider)).toBe(true);
 });
 
+test("aim from the player eye in third person reaches the ground", () => {
+  const { physics, scene } = buildWorld();
+  physics.step();
+  const input = new FakeBuildInput();
+  const placement = new PlacementController(physics, scene);
+
+  // Third-person setup as CameraController produces it: the eye sits 1.6m over
+  // the origin and the camera orbits 4m behind it looking down at max pitch
+  // (1.0 rad). The aim ray must originate at the EYE, not at the camera, or the
+  // 5m budget never reaches the ground from 4m behind the player.
+  const eye = new THREE.Vector3(0, 1.6, 0);
+  const camera = new THREE.PerspectiveCamera();
+  camera.position.set(0, 1.6 + 4 * Math.sin(1.0), 4 * Math.cos(1.0));
+  camera.lookAt(eye);
+  camera.updateMatrixWorld();
+
+  placement.update(1 / 60, input, camera, eye);
+
+  expect(placement.hasTarget).toBe(true);
+});
+
+test("select advances exactly once per press across multiple presses", () => {
+  const { physics, scene } = buildWorld();
+  physics.step();
+  const input = new FakeBuildInput();
+  const placement = new PlacementController(physics, scene);
+  const camera = aimCamera(0.5, 2, 0, 0.5, 0, 0);
+
+  expect(placement.selectedPiece.id).toBe("brick");
+  input.press("select");
+  placement.update(1 / 60, input, camera);
+  // The next frame carries no press: the catalog's wasPressed latch is
+  // released (select(false)), so a later press advances again.
+  placement.update(1 / 60, input, camera);
+  expect(placement.selectedPiece.id).toBe("block");
+
+  input.press("select");
+  placement.update(1 / 60, input, camera);
+  placement.update(1 / 60, input, camera);
+  expect(placement.selectedPiece.id).toBe("beam");
+
+  input.press("select");
+  placement.update(1 / 60, input, camera);
+  placement.update(1 / 60, input, camera);
+  expect(placement.selectedPiece.id).toBe("plank");
+});
+
 test("select cycles the catalog and resizes the ghost to the new piece", () => {
   const { physics, scene } = buildWorld();
   physics.step();

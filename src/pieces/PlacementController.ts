@@ -92,16 +92,25 @@ export class PlacementController {
     return this.catalog.selected;
   }
 
-  update(_dt: number, input: BuildInput, camera: THREE.PerspectiveCamera): void {
-    if (input.consumeSelect()) {
-      this.catalog.select(true);
+  update(
+    _dt: number,
+    input: BuildInput,
+    camera: THREE.PerspectiveCamera,
+    aimOrigin: THREE.Vector3 = camera.position,
+  ): void {
+    // The catalog is edge-triggered by level: `select(true)` on press and
+    // `select(false)` on release. Passing the consumed intent both ways keeps
+    // its wasPressed latch free so every press advances exactly once.
+    const selectPressed = input.consumeSelect();
+    this.catalog.select(selectPressed);
+    if (selectPressed) {
       this.resizeGhost();
     }
     if (input.consumeRotate()) {
       this.ghostRotationValue.multiply(QUARTER_TURN);
     }
 
-    this.aim(camera);
+    this.aim(camera, aimOrigin);
 
     if (input.consumeRemove()) {
       this.removeTarget();
@@ -123,11 +132,15 @@ export class PlacementController {
     this.ghostMesh.scale.set(dx, dy, dz);
   }
 
-  private aim(camera: THREE.PerspectiveCamera): void {
+  private aim(camera: THREE.PerspectiveCamera, aimOrigin: THREE.Vector3): void {
+    // Third-person camera: the aim ray starts at the player eye (the camera
+    // orbits BEHIND the body) and runs along the camera's forward direction —
+    // the crosshair line. Starting at `camera.position` instead would put the
+    // 5m budget 4m behind the eye, so the ghost could never reach the ground.
     const origin: RAPIER.Vector = {
-      x: camera.position.x,
-      y: camera.position.y,
-      z: camera.position.z,
+      x: aimOrigin.x,
+      y: aimOrigin.y,
+      z: aimOrigin.z,
     };
     camera.getWorldDirection(this.rayDir);
 
