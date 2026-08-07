@@ -40,8 +40,8 @@ Work-unit commits: each task = one reviewable commit, tests + code together (wor
 
 ## Phase 3: Physics wrappers + Piece (Rapier integration)
 
-- [ ] 3.1 RED `src/engine/Physics.test.ts`: piece sleeps (velocity→0 after fixed steps); stack no interpenetration; ray through player hits piece (excludes player); overlap detected + clear pose; raycast beyond 5 m no hit. Covers piece-physics specs (buildWorld pattern).
-- [ ] 3.2 GREEN: `src/engine/Physics.ts` — `createDynamicBody` (canSleep, groups), `castRayAndGetNormal`, `castShapeOverlap` (STOP_AT_PENETRATION), `registerPieceCollider`/`isPieceCollider`, group consts (player 1, pieces 2); `src/player/PlayerController.ts` capsule `setCollisionGroups`; `src/pieces/Piece.ts` — dynamic body + cuboid + mesh, `dispose()`. Done: 3.1 green.
+- [x] 3.1 RED `src/engine/Physics.test.ts`: piece sleeps (velocity→0 after fixed steps); stack no interpenetration; ray through player hits piece (excludes player); overlap detected + clear pose; raycast beyond 5 m no hit; Piece.dispose removes collider+mesh. Covers piece-physics specs (buildWorld pattern). Done: 6 tests red (module missing).
+- [x] 3.2 GREEN: `src/engine/Physics.ts` — `createDynamicBody` (canSleep, groups), `castRayAndGetNormal`, `castShapeOverlap` (via `intersectionWithShape`, see deviation 2), `registerPieceCollider`/`isPieceCollider`, group consts (player 1, pieces 2); `src/player/PlayerController.ts` capsule `setCollisionGroups`; `src/pieces/Piece.ts` — dynamic body + cuboid + mesh, `dispose()`. Done: 3.1 green (22 tests total).
 
 ## Phase 4: PlacementController + ghost (integration)
 

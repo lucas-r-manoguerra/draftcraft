@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import * as RAPIER from "@dimforge/rapier3d-compat";
-import { Physics } from "../engine/Physics";
+import { Physics, interactionGroups, PIECES_GROUP, PLAYER_GROUP } from "../engine/Physics";
 /** Input surface PlayerController depends on. Satisfied structurally by
  *  Input; kept narrow so the controller is testable without DOM. */
 export interface PlayerInput {
@@ -61,6 +61,9 @@ export class PlayerController {
   constructor(physics: Physics, scene: THREE.Scene) {
     this.body = physics.createKinematicBody({ x: 0, y: SPAWN_Y, z: 0 });
     this.collider = physics.createCapsuleCollider(CAPSULE_HALF_HEIGHT, CAPSULE_RADIUS, this.body);
+    // Player collides (solver) with the ground and with pieces, so it can climb
+    // blocks — but ray/overlap queries use piece-only groups and skip it.
+    this.collider.setCollisionGroups(interactionGroups(PLAYER_GROUP, PLAYER_GROUP | PIECES_GROUP));
 
     this.controller = physics.world.createCharacterController(0.02);
     this.controller.setUp({ x: 0, y: 1, z: 0 });
