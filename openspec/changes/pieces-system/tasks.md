@@ -52,7 +52,7 @@ Work-unit commits: each task = one reviewable commit, tests + code together (wor
 
 - [x] 5.1 `src/player/Input.ts`: `consumePlace/Rotate/Remove/Select` edge-triggered (`!repeat`), mousedown LMB (locked)/RMB, `contextmenu` preventDefault, Q/R keys.
 - [x] 5.2 `src/main.ts`: instantiate `PlacementController`; call `update(dt, input, camera)` in `onFixedUpdate` before `physics.step()`; sync ghost in render.
-- [ ] 5.3 Manual `bun run dev`: Q cycles piece, LMB places, R ×4 = identity, RMB removes, overlap ghost red + blocked.
+- [x] 5.3 Manual `bun run dev`: Q cycles piece, LMB places, R ×4 = identity, RMB removes, overlap ghost red + blocked. **Signed off by human 2026-08-07** — capsule movement, Q/R cycling, ghost preview, place/remove confirmed working; the two bugs found during this manual test (Q-select latch, aim-from-eye) were fixed in `f42c6fb` with regression tests.
 
 ## Phase 6: Full verification
 
