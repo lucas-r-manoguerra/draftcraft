@@ -50,11 +50,11 @@ Work-unit commits: each task = one reviewable commit, tests + code together (wor
 
 ## Phase 5: Input bindings + wiring
 
-- [ ] 5.1 `src/player/Input.ts`: `consumePlace/Rotate/Remove/Select` edge-triggered (`!repeat`), mousedown LMB (locked)/RMB, `contextmenu` preventDefault, Q/R keys.
-- [ ] 5.2 `src/main.ts`: instantiate `PlacementController`; call `update(dt, input, camera)` in `onFixedUpdate` before `physics.step()`; sync ghost in render.
+- [x] 5.1 `src/player/Input.ts`: `consumePlace/Rotate/Remove/Select` edge-triggered (`!repeat`), mousedown LMB (locked)/RMB, `contextmenu` preventDefault, Q/R keys.
+- [x] 5.2 `src/main.ts`: instantiate `PlacementController`; call `update(dt, input, camera)` in `onFixedUpdate` before `physics.step()`; sync ghost in render.
 - [ ] 5.3 Manual `bun run dev`: Q cycles piece, LMB places, R ×4 = identity, RMB removes, overlap ghost red + blocked.
 
 ## Phase 6: Full verification
 
-- [ ] 6.1 `bun test` — 3 existing + 4 new suites green.
-- [ ] 6.2 `bun run typecheck && bun run build` green.
+- [x] 6.1 `bun test` — 3 existing + 4 new suites green (32 pass / 0 fail).
+- [x] 6.2 `bun run typecheck && bun run build` green.
