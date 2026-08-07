@@ -1,0 +1,7 @@
+node_modules
+dist
+node_modules/.vite
+*.local
+
+# Local tooling infrastructure (skill registry, caches)
+.atl/

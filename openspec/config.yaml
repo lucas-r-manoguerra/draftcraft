@@ -1,0 +1,51 @@
+# openspec/config.yaml — DraftCraft SDD configuration
+schema: spec-driven
+
+context: |
+  Project: DraftCraft — 3D house-building game, real-world dimensions (non-voxel).
+  Stack: Bun 1.3.14 + Vite 8.2.1 + TypeScript 7 (strict) + three 0.185.1 + @dimforge/rapier3d-compat 0.19.3 (WASM physics).
+  Architecture: src/engine/ (Engine, GameLoop, Physics), src/player/ (PlayerController, Input, CameraController), src/world/ (Ground), src/main.ts.
+  Status: milestones 0 (skeleton) and 1 (third-person player + physics) complete; house-building system pending.
+  Testing: bun test — 3 unit/regression tests in src/player/PlayerController.test.ts (only test file present).
+  Conventions: strict TS flags, English code and comments, Bun only (never npm), real-world player dimensions (1.8m capsule).
+
+strict_tdd: true
+
+testing:
+  runner: bun test
+  test_command: bun test
+  layers:
+    unit: bun:test
+    integration: none
+    e2e: none
+  coverage: none
+  quality:
+    typecheck: bun run typecheck
+    build: bun run build
+    linter: none
+    formatter: none
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing code patterns
+      - English code and comments; Bun only, never npm
+    tdd: true
+    test_command: bun test
+  verify:
+    test_command: bun test
+    build_command: bun run typecheck && bun run build
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
