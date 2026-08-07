@@ -15,7 +15,7 @@ describe("PIECE_CATALOG", () => {
     const ids = PIECE_CATALOG.map((piece) => piece.id).sort();
     expect(ids).toEqual(["beam", "block", "brick", "plank"]);
     for (const piece of PIECE_CATALOG) {
-      expect(piece.dimsMm).toEqual(EXPECTED_DIMS[piece.id]);
+      expect(piece.dimsMm).toEqual(EXPECTED_DIMS[piece.id]!);
       for (const dim of piece.dimsMm) {
         expect(Number.isInteger(dim)).toBe(true);
       }
