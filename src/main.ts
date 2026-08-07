@@ -7,6 +7,7 @@ import { Ground } from "./world/Ground";
 import { Input } from "./player/Input";
 import { PlayerController } from "./player/PlayerController";
 import { CameraController } from "./player/CameraController";
+import { PlacementController } from "./pieces/PlacementController";
 
 async function boot(): Promise<void> {
   await RAPIER.init();
@@ -26,11 +27,15 @@ async function boot(): Promise<void> {
   new Ground(physics, engine.scene);
   const player = new PlayerController(physics, engine.scene);
   const camera = new CameraController(engine.camera);
+  const placement = new PlacementController(physics, engine.scene);
 
   const look = new THREE.Vector2();
   const loop = new GameLoop();
 
   loop.onFixedUpdate = (dt: number): void => {
+    // Aim→ghost→place/rotate/remove must run before stepping so placements
+    // settle in the same fixed step that created them.
+    placement.update(dt, input, engine.camera);
     player.update(dt, camera.yawValue, input);
     physics.step();
   };

@@ -2,8 +2,9 @@ import * as THREE from "three";
 
 /**
  * Centralizes every input the game cares about: WASD+Space keyboard, mouse
- * deltas (only meaningful while the pointer is locked), scroll-wheel zoom and
- * pointer-lock lifecycle. Keeps no game or camera knowledge.
+ * deltas (only meaningful while the pointer is locked), scroll-wheel zoom,
+ * pointer-lock lifecycle and build actions (place/remove/rotate/select).
+ * Keeps no game or camera knowledge.
  */
 export class Input {
   private readonly keys = new Set<string>();
@@ -11,6 +12,10 @@ export class Input {
   private readonly movement = new THREE.Vector2();
   private wheelDelta = 0;
   private jumpQueued = false;
+  private placeQueued = false;
+  private removeQueued = false;
+  private rotateQueued = false;
+  private selectQueued = false;
   private locked = false;
   private readonly canvas: HTMLCanvasElement;
 
@@ -24,6 +29,8 @@ export class Input {
     canvas.addEventListener("click", this.handleClick);
     document.addEventListener("pointerlockchange", this.handlePointerLockChange);
     document.addEventListener("mousemove", this.handleMouseMove);
+    document.addEventListener("mousedown", this.handleMouseDown);
+    canvas.addEventListener("contextmenu", this.handleContextMenu);
     document.addEventListener("wheel", this.handleWheel, { passive: false });
   }
 
@@ -55,6 +62,34 @@ export class Input {
     return queued;
   }
 
+  /** Edge-triggered place intent: true once per LMB press while locked. */
+  consumePlace(): boolean {
+    const queued = this.placeQueued;
+    this.placeQueued = false;
+    return queued;
+  }
+
+  /** Edge-triggered remove intent: true once per RMB press. */
+  consumeRemove(): boolean {
+    const queued = this.removeQueued;
+    this.removeQueued = false;
+    return queued;
+  }
+
+  /** Edge-triggered rotate intent: true once per R press. */
+  consumeRotate(): boolean {
+    const queued = this.rotateQueued;
+    this.rotateQueued = false;
+    return queued;
+  }
+
+  /** Edge-triggered catalog select intent: true once per Q press. */
+  consumeSelect(): boolean {
+    const queued = this.selectQueued;
+    this.selectQueued = false;
+    return queued;
+  }
+
   consumeLook(out: THREE.Vector2): THREE.Vector2 {
     out.set(this.lookDelta.x, this.lookDelta.y);
     this.lookDelta.set(0, 0);
@@ -73,6 +108,8 @@ export class Input {
     this.canvas.removeEventListener("click", this.handleClick);
     document.removeEventListener("pointerlockchange", this.handlePointerLockChange);
     document.removeEventListener("mousemove", this.handleMouseMove);
+    document.removeEventListener("mousedown", this.handleMouseDown);
+    this.canvas.removeEventListener("contextmenu", this.handleContextMenu);
     document.removeEventListener("wheel", this.handleWheel);
   }
 
@@ -81,6 +118,12 @@ export class Input {
       if (!event.repeat) this.jumpQueued = true;
       event.preventDefault();
       return;
+    }
+    if (event.code === "KeyR" && !event.repeat) {
+      this.rotateQueued = true;
+    }
+    if (event.code === "KeyQ" && !event.repeat) {
+      this.selectQueued = true;
     }
     if (event.code.startsWith("Key")) {
       this.keys.add(event.code);
@@ -107,6 +150,24 @@ export class Input {
     if (document.pointerLockElement !== this.canvas) return;
     this.lookDelta.x += event.movementX;
     this.lookDelta.y += event.movementY;
+  };
+
+  /**
+   * Build buttons. LMB only while locked: an unlocked LMB is the pointer-lock
+   * request (see `handleClick`), so placement never fires from that click.
+   * RMB removes regardless of lock; the browser context menu is suppressed by
+   * `handleContextMenu` so the removal click has no side effects.
+   */
+  private readonly handleMouseDown = (event: MouseEvent): void => {
+    if (event.button === 0 && this.locked) {
+      this.placeQueued = true;
+    } else if (event.button === 2) {
+      this.removeQueued = true;
+    }
+  };
+
+  private readonly handleContextMenu = (event: MouseEvent): void => {
+    event.preventDefault();
   };
 
   private readonly handleWheel = (event: WheelEvent): void => {
