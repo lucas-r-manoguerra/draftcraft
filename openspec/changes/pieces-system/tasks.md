@@ -45,16 +45,16 @@ Work-unit commits: each task = one reviewable commit, tests + code together (wor
 
 ## Phase 4: PlacementController + ghost (integration)
 
-- [ ] 4.1 RED `src/pieces/PlacementController.test.ts`: aim ground → ghost at hit point cm-rounded; beyond 5 m → no target; brick flush on face (no cm rounding); overlap → ghost invalid + placement blocked; valid → piece created at ghost pose; 4 rotations = identity; remove frees collider + mesh; remove with no target → nothing. Covers piece-placement specs.
-- [ ] 4.2 GREEN `src/pieces/PlacementController.ts`: `update(dt, BuildInput, camera)` — ray 5 m → snapToFace/roundToCm → ghost pose → overlap check → place/rotate/remove via `consume*`; ghost valid/invalid mesh. Done: 4.1 green.
+- [x] 4.1 RED `src/pieces/PlacementController.test.ts`: aim ground → ghost at hit point cm-rounded; beyond 5 m → no target; brick flush on face (no cm rounding); overlap → ghost invalid + placement blocked; valid → piece created at ghost pose; 4 rotations = identity; remove frees collider + mesh; remove with no target → nothing. Covers piece-placement specs.
+- [x] 4.2 GREEN `src/pieces/PlacementController.ts`: `update(dt, BuildInput, camera)` — ray 5 m → snapToFace/roundToCm → ghost pose → overlap check → place/rotate/remove via `consume*`; ghost valid/invalid mesh. Done: 4.1 green (10/10, 32 total).
 
 ## Phase 5: Input bindings + wiring
 
-- [ ] 5.1 `src/player/Input.ts`: `consumePlace/Rotate/Remove/Select` edge-triggered (`!repeat`), mousedown LMB (locked)/RMB, `contextmenu` preventDefault, Q/R keys.
-- [ ] 5.2 `src/main.ts`: instantiate `PlacementController`; call `update(dt, input, camera)` in `onFixedUpdate` before `physics.step()`; sync ghost in render.
+- [x] 5.1 `src/player/Input.ts`: `consumePlace/Rotate/Remove/Select` edge-triggered (`!repeat`), mousedown LMB (locked)/RMB, `contextmenu` preventDefault, Q/R keys.
+- [x] 5.2 `src/main.ts`: instantiate `PlacementController`; call `update(dt, input, camera)` in `onFixedUpdate` before `physics.step()`; sync ghost in render.
 - [ ] 5.3 Manual `bun run dev`: Q cycles piece, LMB places, R ×4 = identity, RMB removes, overlap ghost red + blocked.
 
 ## Phase 6: Full verification
 
-- [ ] 6.1 `bun test` — 3 existing + 4 new suites green.
-- [ ] 6.2 `bun run typecheck && bun run build` green.
+- [x] 6.1 `bun test` — 3 existing + 4 new suites green (32 pass / 0 fail).
+- [x] 6.2 `bun run typecheck && bun run build` green.
